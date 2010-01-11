@@ -1,0 +1,36 @@
+who:   matt@genges.com
+what:  drop history in git repositories
+when:  December 2009
+where: everywhere
+why:   If your repository stores many changing non-text files, it's benefitial
+       to drop the old history every once and a while.
+
+Notes:
+  - Dropping the old history *does* make your repository incompatible with 
+    any other repositories that did not have the drop operation performed.
+  - You can re-add the history to a history-dropped repository easily.
+
+Usage:
+  To drop all commits before 2009-11-30:
+    - ./autodrop 2009-11-30
+    * NB: autodrop loops until no commits exist before the specified date.
+          You'll see loops if your repository is very branchy.
+  Garbage collect dropped commit data:
+    - ./clean
+    * NB: clean removes all refs under refs/remotes and refs/original
+  Pull in old history:
+    - git fetch [old repository with full history]
+    * NB: It'll complain about having no commits in common.  That's expected.
+  Replace old history:
+    - ./replace [original full sha1] [replacement sha1]
+    * NB: Typically you want to replace your oldest commit in the history-
+          dropped repository with its matching commit in the full history 
+          repository.  It's up to you to find the matching hashes.
+  You can maintain a remote repository with the option for other repos to 
+  pull in the complete history on demand.  Follow the procedures above to
+  replace the history, then other repos can pull in the complete history by:
+    - git fetch [repo with replaced history] refs/replace/*:refs/replace/*
+    * NB: The duplicate refs/replace/* at the end of fetch are required.
+
+Examples:
+  [TBD]

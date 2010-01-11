@@ -1,0 +1,15 @@
+#!/bin/sh
+
+git for-each-ref --format='%(refname)' refs/original refs/remotes | \
+        while read ref 
+        do 
+                echo "Removing ref: $ref"
+                git update-ref -d "$ref" 
+        done 
+
+
+echo "Expiring deleted refs..."
+git reflog expire --expire=0 --all 
+echo "Removing unreferenced refs..."
+git gc --prune=now $@
+

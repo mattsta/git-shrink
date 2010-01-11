@@ -1,0 +1,8 @@
+#!/bin/sh
+
+ORIGINAL=$1
+REPLACE_WITH=$2
+git replace $ORIGINAL `git cat-file commit $ORIGINAL | sed "/author/ i\
+parent $REPLACE_WITH
+" |git hash-object -t commit -w --stdin`
+

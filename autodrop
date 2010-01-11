@@ -1,0 +1,25 @@
+#!/bin/sh
+
+function dropit {
+  drop=$1
+  git filter-branch -f --parent-filter "sed -e 's/-p $drop//'" --tag-name-filter cat -- --all ^$drop 
+}
+
+if [[ $1 == '' ]]; then
+  echo "Need one parameter of the initial date to purge."
+  exit 3
+fi
+
+stop_at="$1 23:59:60 -0800"
+start_drop=`git log --until="$stop_at" --max-count=1 |grep commit |sed -s 's/commit //'`
+
+while [[ $start_drop != '' ]]; do
+  echo "Dropping $start_drop and all its parents..."
+  git for-each-ref --format='%(refname)' refs/heads | \
+        while read ref 
+        do 
+                echo "Removing old history in $ref"
+                dropit $start_drop
+        done 
+  start_drop=`git log --until="$stop_at" --max-count=1 |grep commit |sed -s 's/commit //'`
+done
